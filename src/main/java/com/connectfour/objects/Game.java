@@ -42,4 +42,6 @@ public class Game {
 		return 100000 + rnd.nextInt(900000);
 		
 	}
+	
+	String error;
 }

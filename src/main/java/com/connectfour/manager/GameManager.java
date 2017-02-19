@@ -1,5 +1,6 @@
 package com.connectfour.manager;
 
+import com.connectfour.miscellaneous.JedisWrapper;
 import com.connectfour.object.responses.GameResponse;
 import com.connectfour.objects.Board;
 import com.connectfour.objects.Game;
@@ -7,7 +8,10 @@ import com.connectfour.objects.Player;
 import com.connectfour.objects.requests.GameRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import redis.clients.jedis.Jedis;
+
 public class GameManager {
+	ObjectMapper mapper = new ObjectMapper();
 	
 	public GameResponse joinGame(GameRequest request)
 	{
@@ -29,7 +33,20 @@ public class GameManager {
 		game.setBoard(new Board(request.getRows(), request.getColumns()));
 		game.setPlayerOne(new Player(request.getUsername(), "HUMAN", request.getName()));
 		
+		saveGameStateToJedis(game);
 		return assembleGameResponse(game);
+	}
+
+
+	private void saveGameStateToJedis(Game game) {
+		try
+		{
+			JedisWrapper.setJedis("C4"+game.getGameId(), game);
+		}
+		catch (Exception e)
+		{
+			game.setError(e.getMessage());
+		}
 	}
 
 
@@ -38,14 +55,7 @@ public class GameManager {
 		response.setId(game.getGameId());
 		response.setStatus("In Progress");
 		response.setBoard(game.getBoard());
-		try
-		{
-		System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(response));
-		}
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
+		if(game.getError() != null) response.setStatus(game.getError());;
 		return response;
 	}
 	
