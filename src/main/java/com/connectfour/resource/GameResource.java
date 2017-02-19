@@ -24,7 +24,6 @@ public class GameResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public GameResponse joinGame(GameRequest request) throws Exception
 	{
-		//System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 		return manager.joinGame(request);
 	}
 	
@@ -34,7 +33,6 @@ public class GameResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public GameResponse makeMove(MoveRequest request) throws Exception
 	{
-		//System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 		return manager.makeMove(request);
 	}
 
