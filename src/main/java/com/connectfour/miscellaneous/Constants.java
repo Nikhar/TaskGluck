@@ -1,4 +1,4 @@
-package com.connectfour.constants;
+package com.connectfour.miscellaneous;
 
 public final class Constants {
 	

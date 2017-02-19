@@ -1,29 +1,30 @@
 package com.connectfour.objects.requests;
 
+import com.connectfour.miscellaneous.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JoinGame {
+public class GameRequest {
 
 	boolean newGame;
 	
 	/* New Game fields*/
 	String username;
 	String name;
-	boolean twoPlayer;
+	boolean twoPlayer = false;
 	
 	/*
 	 * Only relevant when twoPlayer = false. Thus the opponent is an AI. For the purposes of this
 	 * task, all difficulty levels play the same.
 	 */
-	String difficulty;
+	String difficulty = "rookie";
 	
 	/*board configuration*/
-	int rows;
-	int columns;
+	Integer rows = Constants.BOARD_HEIGHT;
+	Integer columns = Constants.BOARD_WIDTH;
 	
 	/* Join Game*/
 	String gameId;
