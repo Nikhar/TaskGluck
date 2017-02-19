@@ -12,8 +12,6 @@ import com.connectfour.objects.requests.GameRequest;
 import com.connectfour.objects.requests.MoveRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import redis.clients.jedis.Jedis;
-
 public class GameManager {
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -26,13 +24,15 @@ public class GameManager {
 	
 	public GameResponse makeMove(MoveRequest request)
 	{
+		/*
+		 * Load game state from local Redis store.
+		 * */
 		String gameString = JedisWrapper.getJedis(Constants.SAVE_PREFIX + request.getGameId());
 		Game game = null;
 		GameResponse response = new GameResponse();
 		try
 		{
 			game = new ObjectMapper().readValue(gameString, Game.class);
-			System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(game));
 			validateMove(game, request);
 			
 			game.move(request.getColumn());
@@ -75,16 +75,22 @@ public class GameManager {
 		GameResponse response = new GameResponse();
 		try
 		{
+			/*
+			 * Fetch game state from local Redis store.
+			 * */
 			String gameString = JedisWrapper.getJedis(Constants.SAVE_PREFIX + request.getGameId());
 			Game game = new ObjectMapper().readValue(gameString, Game.class);
+			
 			if(game.isPlayerTwoSet())
 				response.setStatus("Can't join game. Both players already set.");
 			else
 			{
 				game.setPlayerTwo(new Player(request.getUsername(), "HUMAN", request.getName()));
 				game.setPlayerTwoSet(true);
-				System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(game));
+				
+				/*Save updated game state*/
 				JedisWrapper.setJedis(Constants.SAVE_PREFIX + request.getGameId(), game);
+				
 				response.setId(game.getGameId());
 				response.setStatus("Succesfully joined as player two");
 				response.setBoard(game.getBoard());
