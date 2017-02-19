@@ -53,7 +53,6 @@ public class GameManager {
 		}
 		catch (Exception e)
 		{
-			
 			response.setStatus("ERROR: Unable to load the string with error " + e.getMessage());
 		}
 		return response;
@@ -73,7 +72,29 @@ public class GameManager {
 
 	/*Private methods*/
 	private GameResponse joinExistingGame(GameRequest request) {
-		return null;
+		GameResponse response = new GameResponse();
+		try
+		{
+			String gameString = JedisWrapper.getJedis(Constants.SAVE_PREFIX + request.getGameId());
+			Game game = new ObjectMapper().readValue(gameString, Game.class);
+			if(game.isPlayerTwoSet())
+				response.setStatus("Can't join game. Both players already set.");
+			else
+			{
+				game.setPlayerTwo(new Player(request.getUsername(), "HUMAN", request.getName()));
+				game.setPlayerTwoSet(true);
+				System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(game));
+				JedisWrapper.setJedis(Constants.SAVE_PREFIX + request.getGameId(), game);
+				response.setId(game.getGameId());
+				response.setStatus("Succesfully joined as player two");
+				response.setBoard(game.getBoard());
+			}
+		}
+		catch(Exception e)
+		{
+			response.setStatus("Failed to load game");
+		}
+		return response;
 	}
 
 
