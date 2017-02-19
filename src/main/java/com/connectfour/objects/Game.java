@@ -58,7 +58,7 @@ public class Game {
 		}
 		if(victor.equals("1") || victor.equals("2"))
 		{
-			this.setResult("YOU WON!");
+			this.setResult("Player" + victor + " WON!");
 			return;
 		}
 	}
@@ -70,9 +70,8 @@ public class Game {
 		{
 			move(column);
 			
-			/*If AI wins means the player has lost*/
 			if(result != null && result.equals("YOU WON!"))
-				result = "YOU LOST!";
+				result = "AI wins";
 		}
 		catch(Exception e)
 		{
