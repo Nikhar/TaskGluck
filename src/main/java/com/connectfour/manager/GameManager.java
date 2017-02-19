@@ -7,6 +7,7 @@ import com.connectfour.object.responses.GameResponse;
 import com.connectfour.objects.Board;
 import com.connectfour.objects.Game;
 import com.connectfour.objects.Player;
+import com.connectfour.objects.Player.PlayerType;
 import com.connectfour.objects.requests.GameRequest;
 import com.connectfour.objects.requests.MoveRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,12 +32,18 @@ public class GameManager {
 		try
 		{
 			game = new ObjectMapper().readValue(gameString, Game.class);
-			String victor = game.getBoard().move("1", request.getColumn());
-			if(victor.equals("1"))
-				response.setStatus("YOU WON!");
-			else response.setStatus("IN PROGRESS");
-			game.setResult(response.getStatus());
+			System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(game));
+			validateMove(game, request);
+			
+			game.move(request.getColumn());
+			
+			if(!game.getResult().equals("YOU WON!") 
+					&& game.getNextTurn().getType() == PlayerType.AI)
+				game.makeAIMove();
+			
 			JedisWrapper.setJedis(Constants.SAVE_PREFIX + request.getGameId(), game);
+			
+			response.setStatus(game.getResult());
 			response.setId(game.getGameId());
 			response.setBoard(game.getBoard());
 		}
@@ -53,6 +60,17 @@ public class GameManager {
 	}
 	
 	
+	private void validateMove(Game game, MoveRequest request) throws InvalidMoveException{
+		
+		if(!game.isPlayerTwoSet() || game.getNextTurn() == null)
+			throw new InvalidMoveException("Game needs to have 2 players before commencing!");
+		
+		Player currentTurn = game.getNextTurn();
+		if(!currentTurn.getId().equals(request.getUsername()))
+			throw new InvalidMoveException("It is not " + request.getUsername() + "'s turn to play!");
+		
+	}
+
 	/*Private methods*/
 	private GameResponse joinExistingGame(GameRequest request) {
 		return null;
@@ -64,6 +82,7 @@ public class GameManager {
 		Game game = new Game(request.isTwoPlayer(), request.getDifficulty());
 		game.setBoard(new Board(request.getRows(), request.getColumns()));
 		game.setPlayerOne(new Player(request.getUsername(), "HUMAN", request.getName()));
+		game.setNextTurn(game.getPlayerOne());
 		
 		saveGameStateToJedis(game);
 		return assembleGameResponse(game);

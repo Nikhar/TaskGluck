@@ -2,6 +2,10 @@ package com.connectfour.objects;
 
 import java.util.Random;
 
+import com.connectfour.ai.AI;
+import com.connectfour.objects.Player.PlayerType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +30,7 @@ public class Game {
 	{
 		gameId = String.valueOf(generateGameId());
 		this.difficulty = difficulty;
+		result = "IN PROGRESS";
 		
 		/*If its an AI game*/
 		if(!isTwoPlayer)
@@ -35,6 +40,49 @@ public class Game {
 			
 			/*Generate an AI Player with the same ID as GameId*/
 			playerTwo = new Player(gameId, "AI");
+		}
+	}
+	
+	public void move(int column) throws Exception
+	{
+		String victor = ".";
+		if(nextTurn.getId().equals(playerOne.getId()))
+		{
+			nextTurn = playerTwo;
+			victor = board.move("1", column);
+		}
+		else
+		{
+			nextTurn = playerOne;
+			victor = board.move("2", column);
+		}
+		if(victor.equals("1") || victor.equals("2"))
+		{
+			this.setResult("YOU WON!");
+			return;
+		}
+	}
+	
+	public void makeAIMove()
+	{
+		int column = new AI(difficulty, board).nextMove();
+		try
+		{
+			move(column);
+			
+			/*If AI wins means the player has lost*/
+			if(result != null && result.equals("YOU WON!"))
+				result = "YOU LOST!";
+		}
+		catch(Exception e)
+		{
+			try {
+				System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(e.getStackTrace()));
+
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
+			result = "Sorry but the AI failed to make a move";
 		}
 	}
 	

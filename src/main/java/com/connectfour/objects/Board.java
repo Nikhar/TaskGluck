@@ -1,5 +1,8 @@
 package com.connectfour.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.connectfour.exceptions.InvalidMoveException;
 import com.connectfour.miscellaneous.Constants;
 
@@ -84,7 +87,7 @@ public class Board {
 		while(j >= 0 && board[row][j].equals(player)) j--;
 		j++;
 		int count = 0;
-		while(board[row][j].equals(player))
+		while(j < columns && board[row][j].equals(player))
 		{
 			j++;
 			count++;
@@ -126,5 +129,22 @@ public class Board {
 				board[i][j]=".";
 	}
 	
+	public static void main(String[] args)
+	{
+		List<String> pattern = new ArrayList<String>();
+		pattern.add("..2222");
+		Board board = new Board(1, 6);
+		board.createBoard(pattern);
+		System.out.println(board.isRowVictory(0, 4));
+	}
+	
+	private void createBoard(List<String> pattern)
+	{
+		for(int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < columns; j++)
+				board[i][j] = ""+pattern.get(i).charAt(j);
+		}
+	}
 
 }
