@@ -21,5 +21,13 @@ public class JedisWrapper {
 			jedis.expire(key, expiry);
 		jedis.close();
 	}
+	
+	public static String getJedis(String string) {
+		
+		Jedis jedis = new Jedis("localhost");
+		String value = jedis.get(string);
+		jedis.close();
+		return value;
+	}
 
 }

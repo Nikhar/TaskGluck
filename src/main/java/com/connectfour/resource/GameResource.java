@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import com.connectfour.manager.GameManager;
 import com.connectfour.object.responses.GameResponse;
 import com.connectfour.objects.requests.GameRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.connectfour.objects.requests.MoveRequest;
 
 
 @Path("/game")
@@ -26,6 +26,16 @@ public class GameResource {
 	{
 		//System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 		return manager.joinGame(request);
+	}
+	
+	@POST
+	@Path("/move")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public GameResponse makeMove(MoveRequest request) throws Exception
+	{
+		//System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
+		return manager.makeMove(request);
 	}
 
 }

@@ -3,8 +3,10 @@ package com.connectfour.objects;
 import java.util.Random;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Game {
 	
 	String gameId;

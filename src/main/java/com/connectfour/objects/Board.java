@@ -33,7 +33,7 @@ public class Board {
 	 * 1: player 1
 	 * 2: player 2
 	 * */
-	public String[][] move(String player, int column) throws InvalidMoveException
+	public String move(String player, int column) throws InvalidMoveException
 	{
 		int i = rows - 1;
 		while(i >= 0)
@@ -45,11 +45,78 @@ public class Board {
 			else
 			{
 				board[i][column] = player;
-				return board;
+				return getVictor(i, column);
 			}
 		}
 		
 		throw new InvalidMoveException("The specified column is full.");
+	}
+	
+	private String getVictor(int row, int column) {
+
+		String player = board[row][column];
+		if(isColumnVictory(row,column)) return player;
+		if(isRowVictory(row,column)) return player;
+		if(isLeadingDiagonalVictory(row, column)) return player;
+		if(isCounterDiagonalVictory(row, column)) return player;
+		
+		return ".";
+	}
+
+	private boolean isColumnVictory(int row, int column)
+	{
+		String player = board[row][column];
+		int count = 0;
+		for(int i = row; i < rows; i++)
+		{
+			if(!board[i][column].equals(player))
+				break;
+			count++;
+		}
+		if(count >= 4) return true;
+		return false;
+	}
+	
+	private boolean isRowVictory(int row, int column)
+	{
+		String player = board[row][column];
+		int j = column;
+		while(j >= 0 && board[row][j].equals(player)) j--;
+		j++;
+		int count = 0;
+		while(board[row][j].equals(player))
+		{
+			j++;
+			count++;
+		}
+		if(count>=4) return true;
+		return false;
+	}
+
+	private boolean isLeadingDiagonalVictory(int row, int column)
+	{
+		String player = board[row][column];
+		int i = row, j = column;
+		for(; i >= 0 && j >= 0 && board[i][j].equals(player); i--, j--);
+		i++;j++;
+		int count = 0;
+		for(; i < rows && j < columns && board[i][j].equals(player); i++, j++)
+			count++;
+		if(count >= 4) return true;
+		return false;
+	}
+	
+	private boolean isCounterDiagonalVictory(int row, int column)
+	{
+		String player = board[row][column];
+		int i = row, j = column;
+		for(; i < rows && j >= 0 && board[i][j].equals(player); i++, j--);
+		i--; j++;
+		int count = 0;
+		for(; i >= 0 && j < columns && board[i][j].equals(player); i--, j++)
+			count++;
+		if(count >= 4) return true;
+		return false;
 	}
 	
 	private void fillEmptyBoard()
