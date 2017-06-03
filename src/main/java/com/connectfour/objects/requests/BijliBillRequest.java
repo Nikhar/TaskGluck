@@ -10,5 +10,5 @@ public class BijliBillRequest {
 	int previous;
 	int current;
 	boolean urban;
-
+	String phase;
 }

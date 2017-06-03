@@ -1,16 +1,14 @@
-package com.connectfour.object.responses;
+package com.connectfour.objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BijliBillResponse {
+public class EnergyChargeObject {
 
-	double total;
-	double fixed;
 	double energy;
 	double fc;
 	double duty;
-	double metreRent;
+	
 }
