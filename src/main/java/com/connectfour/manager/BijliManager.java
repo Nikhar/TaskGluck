@@ -41,8 +41,97 @@ public class BijliManager {
 
 	}
 	
+	private static BijliBillResponse getTwoOneBillAmount(BijliBillRequest request)
+	{
+		System.out.println("2.1");
+		int kw = request.getKilowatt();
+		int minUnits = kw *20;
+		int units = request.getCurrent() - request.getPrevious();
+		if(minUnits > units)
+			units = minUnits;
+		
+		final double energyChargeRate = 6.10;
+		final int fixedChargeRate;
+		
+		if(kw <= 10)
+		{
+			if(request.isUrban())
+				fixedChargeRate = 130;
+			else 
+				fixedChargeRate = 100;
+		}
+		else
+		{
+			if(request.isUrban())
+				fixedChargeRate = 240;
+			else 
+				fixedChargeRate = 200;
+		}
+				
+		double energyCharge = units * energyChargeRate;
+		double fixedCharge = fixedChargeRate * kw;
+		double duty = 0.11 * energyCharge;
+		return new BijliBillResponse(energyCharge + fixedCharge + duty, fixedCharge, energyCharge, 0, duty, 0);
+	}
+	
+	private static BijliBillResponse getTwoTwoBillAmount(BijliBillRequest request)
+	{
+		System.out.println("2.2");
+		int kw = request.getKilowatt();
+		
+		int consumedUnits = request.getCurrent() - request.getPrevious();
+		int minUnits = kw *20;
+		int units = consumedUnits;
+		if(minUnits > units)
+			units = minUnits;
+		
+		final double energyChargeRate;
+		final double fixedChargeRate;
+		
+		if(kw <= 10 && consumedUnits <=50)
+		{
+				energyChargeRate = 6.20;
+				if(request.isUrban())
+					fixedChargeRate = 70;
+				else
+					fixedChargeRate = 55;				
+		}
+		else if (kw <= 10)
+		{
+			energyChargeRate = 7.4;
+			if(request.isUrban())
+				fixedChargeRate = 115;
+			else
+				fixedChargeRate = 100;
+		}
+		else
+		{
+			energyChargeRate = 6.4;
+			if(request.isUrban())
+				fixedChargeRate = 260;
+			else
+				fixedChargeRate = 190;
+		}
+		
+		double energyCharge = units * energyChargeRate;
+		double fixedCharge = fixedChargeRate * kw;
+		double duty = 0.11 * energyCharge;
+		return new BijliBillResponse(energyCharge + fixedCharge + duty, fixedCharge, energyCharge, 0, duty, 0);
+	}
+	
+	
+	private static BijliBillResponse getCommercialBillAmount(BijliBillRequest request)
+	{
+		if(request.getLevel().equals("2.1"))
+			return getTwoOneBillAmount(request);
+		return getTwoTwoBillAmount(request);
+	}
+	
 	public static BijliBillResponse getBillAmount(BijliBillRequest request) {
-
+		
+		if(request.isCommercial())
+			return getCommercialBillAmount(request);
+			
 		int net = request.getCurrent() - request.getPrevious();
 		double amount = 0;
 	
@@ -76,7 +165,7 @@ public class BijliManager {
 	
 	public static void main (String[] args) throws Exception
 	{
-		BijliBillRequest request = new BijliBillRequest(0, 300, true, "single");
+		BijliBillRequest request = new BijliBillRequest(true, "2.2", 2,0, 60, true, "single");
 		ObjectMapper mapper = new ObjectMapper();
 		
 		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(getBillAmount(request)));

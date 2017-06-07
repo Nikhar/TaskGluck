@@ -7,6 +7,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class BijliBillRequest {
 	
+	boolean commercial;
+	String level;
+	int kilowatt;
 	int previous;
 	int current;
 	boolean urban;
