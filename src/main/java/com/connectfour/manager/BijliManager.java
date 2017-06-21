@@ -151,6 +151,12 @@ public class BijliManager {
 		}
 		TreeMap<Integer, TariffObject> fixedRate = request.isUrban()? urban: rural;
 		
+	/*	if(amount < 6000)
+		{
+			amount = 6000;
+			dutyCharges = amount * 0.09;
+		}*/
+		
 		amount = amount/100;
 		dutyCharges = dutyCharges/100;
 		TariffObject tariffObject = fixedRate.floorEntry(net).getValue();
@@ -165,7 +171,7 @@ public class BijliManager {
 	
 	public static void main (String[] args) throws Exception
 	{
-		BijliBillRequest request = new BijliBillRequest(true, "2.2", 2,0, 60, true, "single");
+		BijliBillRequest request = new BijliBillRequest(false, "2.2", 2,0, 10, false, "single");
 		ObjectMapper mapper = new ObjectMapper();
 		
 		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(getBillAmount(request)));
