@@ -151,11 +151,11 @@ public class BijliManager {
 		}
 		TreeMap<Integer, TariffObject> fixedRate = request.isUrban()? urban: rural;
 		
-	/*	if(amount < 6000)
+		if(amount < 6000)
 		{
 			amount = 6000;
 			dutyCharges = amount * 0.09;
-		}*/
+		}
 		
 		amount = amount/100;
 		dutyCharges = dutyCharges/100;
