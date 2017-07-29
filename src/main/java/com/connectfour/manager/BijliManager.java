@@ -46,11 +46,14 @@ public class BijliManager {
 		System.out.println("2.1");
 		int kw = request.getKilowatt();
 		int minUnits = kw *20;
+		if (!request.isUrban())
+			minUnits = kw *15;
+		
 		int units = request.getCurrent() - request.getPrevious();
 		if(minUnits > units)
 			units = minUnits;
 		
-		final double energyChargeRate = 6.10;
+		final double energyChargeRate = 6.26;
 		final int fixedChargeRate;
 		
 		if(kw <= 10)
